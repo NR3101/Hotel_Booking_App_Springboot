@@ -8,24 +8,12 @@
         <version>3.5.14</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.NR3101</groupId>
-    <artifactId>HotelBookingApp</artifactId>
+    <groupId>com.nr3101</groupId>
+    <artifactId>hotel-booking-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>HotelBookingApp</name>
-    <description>HotelBookingApp</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <name>Hotel Booking App</name>
+    <description>Hotel booking application</description>
+
     <properties>
         <java.version>21</java.version>
     </properties>
@@ -42,7 +30,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.2.6</version>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
