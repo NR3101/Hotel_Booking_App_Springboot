@@ -25,4 +25,6 @@ public class Guest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Gender gender;
+
+    private Integer age;
 }

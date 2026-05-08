@@ -30,6 +30,10 @@ public class Payment {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount; // Amount paid
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id")
+    private Booking booking; // One-to-One relationship with Booking
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

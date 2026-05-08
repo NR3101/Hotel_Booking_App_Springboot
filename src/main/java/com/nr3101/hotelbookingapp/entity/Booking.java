@@ -2,11 +2,11 @@ package com.nr3101.hotelbookingapp.entity;
 
 import com.nr3101.hotelbookingapp.entity.role.BookingStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,6 +18,9 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "booking")
 public class Booking {
@@ -51,10 +54,6 @@ public class Booking {
     @Column(nullable = false)
     private LocalDate checkOutDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "booking_guest",
@@ -62,6 +61,9 @@ public class Booking {
             inverseJoinColumns = @JoinColumn(name = "guest_id")
     )
     private Set<Guest> guests; // Set of guests associated with the booking
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amount; // Total amount for the booking, calculated at the time of booking based on room price and number of rooms
 
     @CreationTimestamp
     @Column(updatable = false)
