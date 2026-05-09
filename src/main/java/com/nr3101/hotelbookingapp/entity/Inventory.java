@@ -53,7 +53,7 @@ public class Inventory {
     private BigDecimal surgeFactor; // Surge factor for dynamic pricing
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price; // Price for this date, calculated as room basePrice * surge factor
+    private BigDecimal price; // Price for this date
 
     @Column(nullable = false)
     private String city; // City for easier querying and filtering to avoid joins

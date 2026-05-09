@@ -103,9 +103,9 @@ public class HotelServiceImpl implements HotelService {
         existingHotel.setActive(true);
 
         // Initialize inventory for all rooms of the hotel when it is activated
-        existingHotel
-                .getRooms()
-                .forEach(inventoryService::initializeRoomForAYear);
+        for (var room : existingHotel.getRooms()) {
+            inventoryService.initializeRoomForAYear(room);
+        }
 
         hotelRepository.save(existingHotel);
         log.info("Hotel activated with ID: {}", id);

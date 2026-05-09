@@ -1,5 +1,6 @@
 package com.nr3101.hotelbookingapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,9 +38,11 @@ public class Hotel {
     private Boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore // Prevent serialization of lazy-loaded owner to avoid Hibernate proxy issues
     private User owner;
 
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "hotel")
+    @JsonIgnore // Prevents infinite recursion during JSON serialization
     private List<Room> rooms;
 
     @CreationTimestamp

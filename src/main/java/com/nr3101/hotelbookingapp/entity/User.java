@@ -1,6 +1,6 @@
 package com.nr3101.hotelbookingapp.entity;
 
-import com.nr3101.hotelbookingapp.entity.role.Role;
+import com.nr3101.hotelbookingapp.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

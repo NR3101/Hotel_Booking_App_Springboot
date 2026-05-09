@@ -1,4 +1,4 @@
-package com.nr3101.hotelbookingapp.entity.role;
+package com.nr3101.hotelbookingapp.entity.enums;
 
 public enum Role {
     GUEST,

@@ -2,6 +2,7 @@ package com.nr3101.hotelbookingapp.controller;
 
 import com.nr3101.hotelbookingapp.dto.request.HotelSearchRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.HotelDetailsResponseDto;
+import com.nr3101.hotelbookingapp.dto.response.HotelPriceResponseDto;
 import com.nr3101.hotelbookingapp.dto.response.HotelResponseDto;
 import com.nr3101.hotelbookingapp.service.HotelService;
 import com.nr3101.hotelbookingapp.service.InventoryService;
@@ -21,9 +22,9 @@ public class HotelBrowseController {
     private final HotelService hotelService;
 
     @GetMapping("/search")
-    public ResponseEntity<Page<HotelResponseDto>> searchHotels(@RequestBody HotelSearchRequestDto hotelSearchRequestDto) {
+    public ResponseEntity<Page<HotelPriceResponseDto>> searchHotels(@RequestBody HotelSearchRequestDto hotelSearchRequestDto) {
         log.info("Received hotel search request: {}", hotelSearchRequestDto);
-        Page<HotelResponseDto> hotelsPage = inventoryService.searchHotels(hotelSearchRequestDto);
+        Page<HotelPriceResponseDto> hotelsPage = inventoryService.searchHotels(hotelSearchRequestDto);
         log.info("Found {} hotels matching search criteria", hotelsPage.getTotalElements());
         return ResponseEntity.ok(hotelsPage);
     }

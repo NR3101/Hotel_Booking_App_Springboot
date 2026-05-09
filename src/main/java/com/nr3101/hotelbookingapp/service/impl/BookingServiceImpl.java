@@ -5,7 +5,7 @@ import com.nr3101.hotelbookingapp.dto.request.BookingRequestDto;
 import com.nr3101.hotelbookingapp.dto.request.GuestRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.BookingResponseDto;
 import com.nr3101.hotelbookingapp.entity.*;
-import com.nr3101.hotelbookingapp.entity.role.BookingStatus;
+import com.nr3101.hotelbookingapp.entity.enums.BookingStatus;
 import com.nr3101.hotelbookingapp.repository.*;
 import com.nr3101.hotelbookingapp.service.BookingService;
 import lombok.RequiredArgsConstructor;

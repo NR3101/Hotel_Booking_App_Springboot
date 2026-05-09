@@ -1,6 +1,6 @@
 package com.nr3101.hotelbookingapp.dto.response;
 
-import com.nr3101.hotelbookingapp.entity.role.BookingStatus;
+import com.nr3101.hotelbookingapp.entity.enums.BookingStatus;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -1,38 +1,37 @@
 package com.nr3101.hotelbookingapp.entity;
 
-import com.nr3101.hotelbookingapp.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "payment")
-public class Payment {
-
+@NoArgsConstructor
+@Table(name = "hotel_min_price")
+public class HotelMinPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String transactionId; // Unique identifier for the payment transaction
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id", nullable = false)
+    private Hotel hotel;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentStatus status; // Enum to represent payment status (e.g., PENDING, COMPLETED, FAILED)
+    private LocalDate date;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount; // Amount paid
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
-    private Booking booking; // One-to-One relationship with Booking
+    private BigDecimal minPrice; // the minimum price for the hotel on that date i.e. the lowest price among all rooms available on that date
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -40,4 +39,9 @@ public class Payment {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public HotelMinPrice(Hotel hotel, LocalDate date) {
+        this.hotel = hotel;
+        this.date = date;
+    }
 }
