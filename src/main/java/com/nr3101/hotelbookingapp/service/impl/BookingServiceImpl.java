@@ -1,6 +1,7 @@
 package com.nr3101.hotelbookingapp.service.impl;
 
 import com.nr3101.hotelbookingapp.advice.ResourceNotFoundException;
+import com.nr3101.hotelbookingapp.advice.UnauthorizedException;
 import com.nr3101.hotelbookingapp.dto.request.BookingRequestDto;
 import com.nr3101.hotelbookingapp.dto.request.GuestRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.BookingResponseDto;
@@ -11,6 +12,7 @@ import com.nr3101.hotelbookingapp.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +74,7 @@ public class BookingServiceImpl implements BookingService {
                 .checkInDate(bookingRequest.getCheckInDate())
                 .checkOutDate(bookingRequest.getCheckOutDate())
                 .status(BookingStatus.RESERVED)
-                .user(getCurrentUser()) // Set the actual user later
+                .user(getCurrentUser())
                 .amount(BigDecimal.TEN) // Placeholder for amount calculation logic
                 .build();
 
@@ -87,6 +89,12 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+        User user = getCurrentUser();
+
+        // Check if the booking belongs to the current user
+        if (!booking.getUser().equals(user)) {
+            throw new UnauthorizedException("Booking does not belong to the current user with id: " + user.getId());
+        }
 
         if (hasBookingExpired(booking)) {
             throw new IllegalStateException("Booking has expired. Please initialize a new booking.");
@@ -98,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
 
         guestRequests.forEach(guestRequest -> {
             Guest guest = modelMapper.map(guestRequest, Guest.class);
-            guest.setUser(getCurrentUser()); // Set the actual user later
+            guest.setUser(user);
             Guest savedGuest = guestRepository.save(guest);
             booking.getGuests().add(savedGuest);
         });
@@ -113,10 +121,7 @@ public class BookingServiceImpl implements BookingService {
         return booking.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now());
     }
 
-    // TODO: Remove dummy user and set the actual user when the booking is confirmed
     public User getCurrentUser() {
-        User user = new User();
-        user.setId(1L);
-        return user;
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

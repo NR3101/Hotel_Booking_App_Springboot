@@ -37,8 +37,7 @@ public class Hotel {
     @Column(nullable = false)
     private Boolean active;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore // Prevent serialization of lazy-loaded owner to avoid Hibernate proxy issues
+    @ManyToOne(optional = false)
     private User owner;
 
     @OneToMany(mappedBy = "hotel")

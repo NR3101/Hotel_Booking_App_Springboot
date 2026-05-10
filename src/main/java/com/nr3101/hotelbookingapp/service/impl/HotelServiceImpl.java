@@ -1,12 +1,14 @@
 package com.nr3101.hotelbookingapp.service.impl;
 
 import com.nr3101.hotelbookingapp.advice.ResourceNotFoundException;
+import com.nr3101.hotelbookingapp.advice.UnauthorizedException;
 import com.nr3101.hotelbookingapp.dto.request.HotelRequestDto;
 import com.nr3101.hotelbookingapp.dto.request.HotelUpdateRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.HotelDetailsResponseDto;
 import com.nr3101.hotelbookingapp.dto.response.HotelResponseDto;
 import com.nr3101.hotelbookingapp.dto.response.RoomResponseDto;
 import com.nr3101.hotelbookingapp.entity.Hotel;
+import com.nr3101.hotelbookingapp.entity.User;
 import com.nr3101.hotelbookingapp.repository.HotelRepository;
 import com.nr3101.hotelbookingapp.service.HotelService;
 import com.nr3101.hotelbookingapp.service.InventoryService;
@@ -14,6 +16,7 @@ import com.nr3101.hotelbookingapp.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,9 @@ public class HotelServiceImpl implements HotelService {
         log.info("Creating hotel with name: {}", hotelRequestDTO.getName());
         Hotel hotel = modelMapper.map(hotelRequestDTO, Hotel.class);
         hotel.setActive(false); // Default to inactive until approved
+
+        hotel.setOwner(getCurrentUser()); // Set the owner of the hotel to the currently authenticated user
+
         Hotel savedHotel = hotelRepository.save(hotel);
         log.info("Hotel created with ID: {}", savedHotel.getId());
         return modelMapper.map(savedHotel, HotelResponseDto.class);
@@ -44,6 +50,12 @@ public class HotelServiceImpl implements HotelService {
         log.info("Fetching hotel with ID: {}", id);
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + id));
+
+        User currentUser = getCurrentUser();
+        if (!hotel.getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to view this hotel");
+        }
+
         return modelMapper.map(hotel, HotelResponseDto.class);
     }
 
@@ -52,6 +64,12 @@ public class HotelServiceImpl implements HotelService {
         log.info("Updating hotel with ID: {}", id);
         Hotel existingHotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + id));
+
+        // Only the owner of the hotel can update it
+        User currentUser = getCurrentUser();
+        if (!existingHotel.getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to update this hotel");
+        }
 
         if (hotelUpdateRequestDTO.getName() != null) {
             existingHotel.setName(hotelUpdateRequestDTO.getName());
@@ -83,6 +101,12 @@ public class HotelServiceImpl implements HotelService {
         log.info("Deleting hotel with ID: {}", id);
         Hotel existingHotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + id));
+
+        // Only the owner of the hotel can delete it
+        User currentUser = getCurrentUser();
+        if (!existingHotel.getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to delete this hotel");
+        }
 
         // Delete all future inventories and rooms associated with the hotel before deleting the hotel itself
         for (var room : existingHotel.getRooms()) {
@@ -123,5 +147,9 @@ public class HotelServiceImpl implements HotelService {
                 .toList();
 
         return new HotelDetailsResponseDto(modelMapper.map(hotel, HotelResponseDto.class), rooms);
+    }
+
+    public User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

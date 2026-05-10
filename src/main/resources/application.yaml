@@ -13,8 +13,10 @@ spring:
       hibernate:
         format_sql: true
 
-
 server:
   port: 8080
   servlet:
     context-path: /api/v1 # Makes all endpoints start with /api/v1
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY:your_secret_key_here_that_is_long_enough_for_security_purposes}

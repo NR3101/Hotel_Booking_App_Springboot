@@ -1,10 +1,12 @@
 package com.nr3101.hotelbookingapp.service.impl;
 
 import com.nr3101.hotelbookingapp.advice.ResourceNotFoundException;
+import com.nr3101.hotelbookingapp.advice.UnauthorizedException;
 import com.nr3101.hotelbookingapp.dto.request.RoomRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.RoomResponseDto;
 import com.nr3101.hotelbookingapp.entity.Hotel;
 import com.nr3101.hotelbookingapp.entity.Room;
+import com.nr3101.hotelbookingapp.entity.User;
 import com.nr3101.hotelbookingapp.repository.HotelRepository;
 import com.nr3101.hotelbookingapp.repository.RoomRepository;
 import com.nr3101.hotelbookingapp.service.InventoryService;
@@ -12,6 +14,7 @@ import com.nr3101.hotelbookingapp.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,12 @@ public class RoomServiceImpl implements RoomService {
         log.info("Creating room for hotelId: {}", hotelId);
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id: " + hotelId));
+
+        // Check if the current user is the owner of the hotel
+        User currentUser = getCurrentUser();
+        if (!hotel.getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to add rooms to this hotel");
+        }
 
         Room room = modelMapper.map(roomRequestDto, Room.class);
         room.setHotel(hotel);
@@ -60,6 +69,12 @@ public class RoomServiceImpl implements RoomService {
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id: " + hotelId));
 
+        // Check if the current user is the owner of the hotel
+        User currentUser = getCurrentUser();
+        if (!hotel.getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to view rooms of this hotel");
+        }
+
         return hotel.getRooms().stream()
                 .map(room -> modelMapper.map(room, RoomResponseDto.class))
                 .toList();
@@ -72,10 +87,20 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findByIdAndHotelId(roomId, hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + roomId + " for hotel id: " + hotelId));
 
+        // Check if the current user is the owner of the hotel
+        User currentUser = getCurrentUser();
+        if (!room.getHotel().getOwner().equals(currentUser)) {
+            throw new UnauthorizedException("You are not authorized to delete rooms of this hotel");
+        }
+
         // Delete future inventories for the deleted room
         inventoryService.deleteAllInventories(room);
 
         roomRepository.delete(room);
         log.info("Room deleted with id: {} for hotelId: {}", roomId, hotelId);
+    }
+
+    public User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
