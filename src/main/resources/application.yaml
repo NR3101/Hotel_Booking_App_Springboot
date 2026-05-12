@@ -18,5 +18,14 @@ server:
   servlet:
     context-path: /api/v1 # Makes all endpoints start with /api/v1
 
+stripe:
+  secret:
+    key: ${STRIPE_SECRET_KEY}
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET}
+
 jwt:
   secretKey: ${JWT_SECRET_KEY:your_secret_key_here_that_is_long_enough_for_security_purposes}
+
+frontend:
+  url: http://localhost:8080 # URL of the frontend application for CORS configuration

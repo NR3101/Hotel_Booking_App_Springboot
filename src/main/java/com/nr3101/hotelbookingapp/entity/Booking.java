@@ -65,6 +65,9 @@ public class Booking {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount; // Total amount for the booking, calculated at the time of booking based on room price and number of rooms
 
+    @Column(unique = true)
+    private String paymentSessionId; // To store Stripe session ID for payment processing
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

@@ -4,6 +4,7 @@ import com.nr3101.hotelbookingapp.entity.Inventory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * PricingService is responsible for calculating the dynamic price of a hotel room based on various factors.
@@ -30,5 +31,14 @@ public class PricingService {
 
         // Calculate final price using the decorated strategy
         return pricingStrategy.calculatePrice(inventory);
+    }
+
+    // Calculate total price for a list of inventory records(i.e. the sum of prices for each date in the booking)
+    public BigDecimal calculateTotalPrice(
+            List<Inventory> inventories
+    ) {
+        return inventories.stream()
+                .map(this::calculateDynamicPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

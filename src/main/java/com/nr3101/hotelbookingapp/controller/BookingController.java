@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/bookings")
@@ -33,5 +34,29 @@ public class BookingController {
             @Valid @RequestBody List<GuestRequestDto> guestRequests
     ) {
         return ResponseEntity.ok(bookingService.addGuestsToBooking(bookingId, guestRequests));
+    }
+
+    @PostMapping("/{bookingId}/payment")
+    public ResponseEntity<Map<String, String>> initiatePayment(
+            @PathVariable Long bookingId
+    ) {
+        String sessionUrl = bookingService.initiatePayment(bookingId);
+        return ResponseEntity.ok(Map.of("sessionUrl", sessionUrl));
+    }
+
+    @PostMapping("/{bookingId}/cancel")
+    public ResponseEntity<Void> cancelBooking(
+            @PathVariable Long bookingId
+    ) {
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{bookingId}/status")
+    public ResponseEntity<Map<String, String>> getBookingStatus(
+            @PathVariable Long bookingId
+    ) {
+        String status = bookingService.getBookingStatus(bookingId);
+        return ResponseEntity.ok(Map.of("bookingStatus", status));
     }
 }
