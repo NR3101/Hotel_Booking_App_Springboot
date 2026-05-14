@@ -1,41 +1,47 @@
-# HotelBookingApp
+# Hotel Booking App
 
-A Spring Boot hotel booking application backed by PostgreSQL.
+A production-style REST API for hotel booking built with Spring Boot. Supports hotel management, room inventory, dynamic pricing, user authentication, and Stripe payment integration.
 
-## Tech stack
+## Tech Stack
+
+- **Java 21** / **Spring Boot 3.5**
+- **Spring Security** — JWT-based authentication & role-based authorization
+- **Spring Data JPA** — PostgreSQL
+- **Stripe** — Payment processing via Checkout Sessions + Webhooks
+- **SpringDoc OpenAPI** — Swagger UI for API documentation
+- **Lombok** / **ModelMapper**
+
+## Features
+
+- **Auth** — Signup, login (JWT access + refresh token via HTTP-only cookie)
+- **Hotel Management** — CRUD for hotels and rooms (admin / `HOTEL_MANAGER` role)
+- **Room Inventory** — Daily inventory tracking with surge pricing and availability control
+- **Dynamic Pricing** — Pluggable pricing strategies (occupancy, surge, holiday, urgency)
+- **Hotel Search** — Public search by city, dates, and room count with average pricing
+- **Bookings** — Initialize → add guests → pay → confirm flow
+- **Payments** — Stripe Checkout Sessions with webhook-based confirmation
+- **Reports** — Revenue and booking reports per hotel with date filtering
+
+## API Documentation
+
+Once the app is running, Swagger UI is available at:
+
+```
+http://localhost:8080/api/v1/swagger-ui.html
+```
+
+## Getting Started
+
+### Prerequisites
 
 - Java 21
-- Spring Boot 3.5.x
-- Spring Web
-- Spring Data JPA
-- Validation
-- PostgreSQL
-- Maven
-- Lombok
+- Maven 3.9+ (or use the included `mvnw` wrapper)
+- PostgreSQL 15+
+- Stripe account (for payment features)
 
-## Repository goals
+### 1. Database Setup
 
-This repository is set up for incremental development and frequent GitHub pushes:
-
-- keep source code and config under version control
-- keep local secrets and machine-specific files out of Git
-- make it easy to run the app against a local PostgreSQL instance
-
-## Project structure
-
-- `src/main/java` — application source code
-- `src/main/resources` — application configuration
-- `src/test/java` — tests
-
-## Prerequisites
-
-- Java 21
-- Maven 3.9+ or the included Maven wrapper
-- PostgreSQL 15+ or a compatible Docker container
-
-## PostgreSQL setup
-
-If you want to use Docker, start a local PostgreSQL container like this:
+Start a PostgreSQL instance. With Docker:
 
 ```bash
 docker run -d \
@@ -47,38 +53,47 @@ docker run -d \
   postgres:latest
 ```
 
-If the container already exists, restart it instead:
+### 2. Environment Variables
 
-```bash
-docker start hotel_booking_postgres
-```
-
-## Local configuration
-
-The default `src/main/resources/application.yaml` reads database settings from environment variables:
-
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-
-A sample file is provided in `.env.example`. Copy it to `.env` if you want to manage local values in one place:
+Copy the example env file and fill in your values:
 
 ```bash
 cp .env.example .env
 ```
 
-`.env` is ignored by Git, so your local settings stay private.
+| Variable | Description |
+|---|---|
+| `DB_URL` | JDBC connection string |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `JWT_SECRET_KEY` | Secret key for signing JWTs |
+| `STRIPE_SECRET_KEY` | Stripe API secret key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
 
-## Running the app
-
-Using the Maven wrapper:
+### 3. Run
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-## Running tests
+The API will be available at `http://localhost:8080/api/v1`.
 
-```bash
-./mvnw test
+## Project Structure
+
 ```
+src/main/java/com/nr3101/hotelbookingapp/
+├── advice/          # Global exception handling & response wrapping
+├── config/          # App configuration (ModelMapper, OpenAPI, Stripe)
+├── controller/      # REST controllers
+├── dto/             # Request & response DTOs
+├── entity/          # JPA entities & enums
+├── repository/      # Spring Data JPA repositories
+├── security/        # JWT auth filter, service & security config
+├── service/         # Business logic (interfaces + implementations)
+├── strategy/        # Dynamic pricing strategies
+└── util/            # Utility classes
+```
+
+## License
+
+This project is for learning and portfolio purposes.

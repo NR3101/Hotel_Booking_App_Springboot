@@ -20,4 +20,6 @@ public interface BookingService {
     void cancelBooking(Long bookingId);
 
     String getBookingStatus(Long bookingId);
+
+    List<BookingResponseDto> getBookingsForCurrentUser();
 }

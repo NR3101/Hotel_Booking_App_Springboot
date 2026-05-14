@@ -5,6 +5,8 @@ import com.nr3101.hotelbookingapp.dto.request.SignupRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.LoginResponseDto;
 import com.nr3101.hotelbookingapp.dto.response.UserResponseDto;
 import com.nr3101.hotelbookingapp.security.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,15 +27,18 @@ import java.util.Arrays;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Authentication", description = "Signup, login, and token refresh endpoints")
 public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "Register a new user", description = "Creates a new user account and returns user details")
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signUp(@Valid @RequestBody SignupRequestDto request) {
         return new ResponseEntity<>(authService.signUp(request), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Login", description = "Authenticates the user and returns a JWT access token. A refresh token is set as an HTTP-only cookie.")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
             @Valid @RequestBody LoginRequestDto request,
@@ -57,6 +62,7 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(accessToken));
     }
 
+    @Operation(summary = "Refresh access token", description = "Uses the refresh token cookie to issue a new JWT access token")
     @PostMapping("/refresh")
     public ResponseEntity<LoginResponseDto> refreshToken(HttpServletRequest request) {
         // Extract the refresh token from the cookie

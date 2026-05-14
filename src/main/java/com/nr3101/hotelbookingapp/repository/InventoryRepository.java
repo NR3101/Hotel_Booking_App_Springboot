@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -133,5 +134,49 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             @Param("roomsCount") Integer roomsCount
     );
 
+    @Query("""
+                SELECT i
+                FROM Inventory i
+                WHERE i.room.id = :roomId
+                  AND i.date BETWEEN :startDate AND :endDate
+            """)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Inventory> findAndLockInventoriesForUpdate(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Modifying
+    @Query("""
+                UPDATE Inventory i
+                SET i.surgeFactor = :surgeFactor,
+                    i.price = i.room.basePrice * :surgeFactor,
+                    i.closed = :closed
+                WHERE i.room.id = :roomId
+                  AND i.date BETWEEN :startDate AND :endDate
+            """)
+    void updateInventory(
+            @Param("roomId") Long roomId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("surgeFactor") BigDecimal surgeFactor,
+            @Param("closed") Boolean closed
+    );
+
     List<Inventory> findByHotelAndDateBetween(Hotel hotel, LocalDate startDate, LocalDate endDate);
+
+    // Find all future inventory records for a room (used for updating basePrice or totalCount)
+    List<Inventory> findByRoomAndDateGreaterThanEqual(Room room, LocalDate date);
+
+    // Find all future inventory records for a hotel (used for updating city)
+    @Query("""
+            SELECT i FROM Inventory i
+            WHERE i.hotel.id = :hotelId
+              AND i.date >= :date
+            ORDER BY i.date ASC
+            """)
+    List<Inventory> findByHotelAndDateGreaterThanEqual(@Param("hotelId") Long hotelId, @Param("date") LocalDate date);
+
+    List<Inventory> findByRoomOrderByDate(Room room);
 }

@@ -1,5 +1,6 @@
 package com.nr3101.hotelbookingapp.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,21 +9,29 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
+@Schema(description = "Request payload to create or update a room")
 public class RoomRequestDto {
 
     @NotBlank(message = "Room type is required")
-    private String type; // e.g., "Single", "Double", "Suite"
+    @Schema(description = "Room type", example = "Deluxe Suite")
+    private String type;
 
     @NotNull(message = "Base price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Base price must be greater than 0")
-    private BigDecimal basePrice; // e.g., 100.00
+    @Schema(description = "Base price per night", example = "150.00")
+    private BigDecimal basePrice;
 
+    @Schema(description = "Array of photo URLs")
     private String[] photos;
+
+    @Schema(description = "Array of amenity names")
     private String[] amenities;
 
     @NotNull(message = "Total count is required")
-    private Integer totalCount; // Total number of rooms of this type available in the hotel
+    @Schema(description = "Total number of rooms of this type", example = "10")
+    private Integer totalCount;
 
     @NotNull(message = "Capacity is required")
-    private Integer capacity; // Number of guests the room can accommodate
+    @Schema(description = "Max guest capacity per room", example = "2")
+    private Integer capacity;
 }

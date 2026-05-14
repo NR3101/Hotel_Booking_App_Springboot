@@ -1,6 +1,7 @@
 package com.nr3101.hotelbookingapp.dto.response;
 
 import com.nr3101.hotelbookingapp.entity.enums.BookingStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,15 +10,33 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
+@Schema(description = "Booking details")
 public class BookingResponseDto {
 
+    @Schema(description = "Booking ID")
     private Long id;
-    private Integer roomsCount; // Number of rooms booked
-    private BookingStatus status; // Status of the booking (e.g., CONFIRMED, CANCELLED)
+
+    @Schema(description = "Number of rooms booked")
+    private Integer roomsCount;
+
+    @Schema(description = "Current booking status")
+    private BookingStatus status;
+
+    @Schema(description = "Check-in date")
     private LocalDate checkInDate;
+
+    @Schema(description = "Check-out date")
     private LocalDate checkOutDate;
-    private Set<GuestResponseDto> guests; // Set of guests associated with the booking
+
+    @Schema(description = "Guests associated with the booking")
+    private Set<GuestResponseDto> guests;
+
+    @Schema(description = "Booking creation timestamp")
     private LocalDateTime createdAt;
+
+    @Schema(description = "Last update timestamp")
     private LocalDateTime updatedAt;
-    private BigDecimal amount; // Total price for the booking
+
+    @Schema(description = "Total booking amount")
+    private BigDecimal amount;
 }

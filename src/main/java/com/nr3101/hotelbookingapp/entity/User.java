@@ -1,5 +1,6 @@
 package com.nr3101.hotelbookingapp.entity;
 
+import com.nr3101.hotelbookingapp.entity.enums.Gender;
 import com.nr3101.hotelbookingapp.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,9 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +35,15 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password; // It will be hashed before storing in the database
 
-    private String name; // Optional
+    private String name; // Name of the user (e.g., John Doe)
+
+    @Column(unique = true, length = 10)
+    private String phoneNumber; // Phone number of the user
+
+    private LocalDate dateOfBirth; // Date of birth of the user
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender; // Gender of the user
 
     @ElementCollection(fetch = FetchType.EAGER) // so that a new table is created to store the roles of the user
     @Enumerated(EnumType.STRING)

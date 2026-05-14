@@ -1,17 +1,32 @@
 package com.nr3101.hotelbookingapp.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Schema(description = "Room details")
 public class RoomResponseDto {
 
+    @Schema(description = "Room ID")
     private Long id;
-    private String type; // e.g., "Single", "Double", "Suite"
-    private BigDecimal basePrice; // e.g., 100.00
+
+    @Schema(description = "Room type (e.g. Single, Double, Suite)")
+    private String type;
+
+    @Schema(description = "Base price per night")
+    private BigDecimal basePrice;
+
+    @Schema(description = "Photo URLs")
     private String[] photos;
+
+    @Schema(description = "Amenities")
     private String[] amenities;
-    private Integer totalCount; // Total number of rooms of this type available in the hotel
-    private Integer capacity; // Number of guests the room can accommodate
+
+    @Schema(description = "Total rooms of this type")
+    private Integer totalCount;
+
+    @Schema(description = "Max guest capacity")
+    private Integer capacity;
 }

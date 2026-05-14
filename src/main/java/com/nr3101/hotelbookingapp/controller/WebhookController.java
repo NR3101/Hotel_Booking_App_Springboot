@@ -4,6 +4,7 @@ import com.nr3101.hotelbookingapp.service.BookingService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/webhooks")
 @RequiredArgsConstructor
 @Slf4j
+@Hidden
 public class WebhookController {
 
     private final BookingService bookingService;

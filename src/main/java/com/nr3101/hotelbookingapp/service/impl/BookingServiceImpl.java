@@ -1,7 +1,6 @@
 package com.nr3101.hotelbookingapp.service.impl;
 
 import com.nr3101.hotelbookingapp.advice.ResourceNotFoundException;
-import com.nr3101.hotelbookingapp.advice.UnauthorizedException;
 import com.nr3101.hotelbookingapp.dto.request.BookingRequestDto;
 import com.nr3101.hotelbookingapp.dto.request.GuestRequestDto;
 import com.nr3101.hotelbookingapp.dto.response.BookingResponseDto;
@@ -20,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static com.nr3101.hotelbookingapp.util.AppUtils.getCurrentUser;
 
 @Service
 @RequiredArgsConstructor
@@ -117,7 +118,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if the booking belongs to the current user
         if (!booking.getUser().equals(user)) {
-            throw new UnauthorizedException("Booking does not belong to the current user with id: " + user.getId());
+            throw new AccessDeniedException("Booking does not belong to the current user with id: " + user.getId());
         }
 
         if (hasBookingExpired(booking)) {
@@ -153,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if the booking belongs to the current user
         if (!booking.getUser().equals(user)) {
-            throw new UnauthorizedException("Booking does not belong to the current user with id: " + user.getId());
+            throw new AccessDeniedException("Booking does not belong to the current user with id: " + user.getId());
         }
 
         // Check if the booking has expired
@@ -251,7 +252,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if the booking belongs to the current user
         if (!booking.getUser().equals(user)) {
-            throw new UnauthorizedException("Booking does not belong to the current user with id: " + user.getId());
+            throw new AccessDeniedException("Booking does not belong to the current user with id: " + user.getId());
         }
 
         // Check if the booking has been confirmed
@@ -307,19 +308,26 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if the booking belongs to the current user
         if (!booking.getUser().equals(user)) {
-            throw new UnauthorizedException("Booking does not belong to the current user with id: " + user.getId());
+            throw new AccessDeniedException("Booking does not belong to the current user with id: " + user.getId());
         }
 
         return booking.getStatus().name();
     }
 
+    @Override
+    public List<BookingResponseDto> getBookingsForCurrentUser() {
+        User user = getCurrentUser();
+        log.info("Fetching bookings for user with id: {}", user.getId());
+
+        List<Booking> bookings = bookingRepository.findByUser(user);
+        return bookings.stream()
+                .map(booking -> modelMapper.map(booking, BookingResponseDto.class))
+                .toList();
+    }
+
 
     public boolean hasBookingExpired(Booking booking) {
         return booking.getCreatedAt().plusMinutes(10).isBefore(LocalDateTime.now());
-    }
-
-    public User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     /**

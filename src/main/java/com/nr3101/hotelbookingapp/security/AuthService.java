@@ -3,7 +3,6 @@ package com.nr3101.hotelbookingapp.security;
 import com.nr3101.hotelbookingapp.advice.EmailAlreadyExistsException;
 import com.nr3101.hotelbookingapp.dto.request.LoginRequestDto;
 import com.nr3101.hotelbookingapp.dto.request.SignupRequestDto;
-import com.nr3101.hotelbookingapp.dto.response.LoginResponseDto;
 import com.nr3101.hotelbookingapp.dto.response.UserResponseDto;
 import com.nr3101.hotelbookingapp.entity.User;
 import com.nr3101.hotelbookingapp.entity.enums.Role;

@@ -1,6 +1,5 @@
 package com.nr3101.hotelbookingapp.security;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,8 +38,10 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Define authorization rules
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(("/admin/**")).hasRole("HOTEL_MANAGER")
                         .requestMatchers("/bookings/**").authenticated()
+                        .requestMatchers("/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 // Add the JWT authentication filter before the default UsernamePasswordAuthenticationFilter
@@ -65,8 +66,6 @@ public class WebSecurityConfig {
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
-        return (request, response, accessDeniedException) -> {
-            handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
-        };
+        return (request, response, accessDeniedException) -> handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
     }
 }

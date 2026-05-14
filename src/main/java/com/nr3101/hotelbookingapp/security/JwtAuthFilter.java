@@ -1,6 +1,7 @@
 package com.nr3101.hotelbookingapp.security;
 
 import com.nr3101.hotelbookingapp.entity.User;
+import com.nr3101.hotelbookingapp.service.UserService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

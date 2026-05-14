@@ -11,10 +11,11 @@ import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+
+import static com.nr3101.hotelbookingapp.util.AppUtils.getCurrentUser;
 
 
 /**
@@ -90,9 +91,5 @@ public class CheckoutServiceImpl implements CheckoutService {
         } catch (StripeException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
